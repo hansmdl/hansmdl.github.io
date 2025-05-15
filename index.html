@@ -3,852 +3,516 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChinolaStay - Plataforma SaaS</title>
+    <title>Pitch Deck: Loanversores</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f8fa; /* Un gris muy claro, casi blanco */
-            color: #374151; /* text-gray-700 */
+            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
-        .sidebar {
-            transition: transform 0.3s ease-in-out;
-            background-color: white;
-            border-right: 1px solid #e5e7eb; /* border-gray-200 */
-            width: 260px; /* Un poco más ancho */
-        }
-        .sidebar-closed {
-            transform: translateX(-100%);
-        }
-        .main-content-wrapper { /* Nuevo wrapper para el contenido principal */
-            width: calc(100% - 260px); /* Ajustar al ancho del sidebar */
-            transition: width 0.3s ease-in-out;
-        }
-        .main-content-wrapper-full {
+        .slide {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
             width: 100%;
+            box-sizing: border-box;
         }
-        .nav-link {
-            color: #4b5563; /* text-gray-600 */
-            font-weight: 500; /* medium */
+        .slide.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .nav-link:hover {
-            background-color: #f9fafb; /* text-gray-50 */
-            color: #f97316; /* text-orange-500 */
-        }
-        .nav-link:hover i {
-            color: #f97316; /* text-orange-500 */
-        }
-        .active-link {
-            background-color: #fff7ed; /* orange-50 */
-            color: #ea580c; /* orange-600 */
-            font-weight: 600; /* semibold */
-        }
-        .active-link i {
-            color: #f97316; /* orange-500 */
-        }
-        
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-        .modal { display: none; align-items: center; justify-content: center; }
-        .modal.open { display: flex; }
-        
-        .content-card {
-            background-color: white;
-            border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .kpi-card {
-            padding: 1.25rem; /* p-5 */
-        }
-        .kpi-card .value {
-            font-size: 1.75rem; /* text-3xl */
-            font-weight: 700; /* bold */
-        }
-        .kpi-card .percentage-change {
-            font-size: 0.75rem; /* text-xs */
-            padding: 0.125rem 0.375rem; /* px-1.5 py-0.5 */
-            border-radius: 0.75rem; /* rounded-full */
-            font-weight: 500;
-        }
-        .percentage-positive { background-color: #ecfdf5; color: #10b981; } /* green-50, green-700 */
-        .percentage-negative { background-color: #fef2f2; color: #ef4444; } /* red-50, red-700 */
-
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 220px;
-            box-shadow: 0px 10px 20px 0px rgba(0,0,0,0.07);
-            z-index: 50;
-            border-radius: 0.5rem; /* rounded-lg */
-            border: 1px solid #f3f4f6; /* gray-100 */
-            right: 0; 
-            top: calc(100% + 8px); 
-        }
-        .dropdown-content a, .dropdown-content button {
-            color: #374151; /* gray-700 */
-            padding: 0.625rem 1rem; /* py-2.5 px-4 */
-            text-decoration: none; display: block; font-size: 0.875rem; /* text-sm */
-            text-align: left; width: 100%;
-        }
-        .dropdown-content a:hover, .dropdown-content button:hover { background-color: #f9fafb; /* gray-50 */ }
-        .dropdown:hover .dropdown-content { display: block; }
-        .dropdown-divider { height: 1px; background-color: #f3f4f6; margin: 0.5rem 0; }
-
-        .pro-badge {
-            background-color: #c026d3; 
-            color: white;
-            font-size: 0.7rem; /* text-xs */
-            font-weight: 600; /* semibold */
-            padding: 0.125rem 0.5rem; /* py-0.5 px-2 */
-            border-radius: 0.25rem; /* rounded-sm */
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .chart-placeholder {
-            height: 200px;
-            background-color: #f9fafb; /* gray-50 */
+        .slide:last-child { border-bottom: none; }
+        .highlight { color: #10B981; /* emerald-500 */ }
+        .chart-placeholder-pitch {
+            background-color: #f3f4f6;
+            border: 2px dashed #9ca3af;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            color: #9ca3af; /* gray-400 */
-            border-radius: 0.5rem; /* rounded-lg */
-            border: 1px dashed #e5e7eb; /* gray-200 */
-        }
-        .btn-primary {
-            background-color: #f97316; /* orange-500 */
-            color: white;
-            font-weight: 500; /* medium */
-            padding: 0.625rem 1.25rem; /* py-2.5 px-5 */
-            border-radius: 0.5rem; /* rounded-lg */
-            transition: background-color 0.2s;
-        }
-        .btn-primary:hover {
-            background-color: #ea580c; /* orange-600 */
-        }
-        .btn-secondary {
-            background-color: #e5e7eb; /* gray-200 */
-            color: #374151; /* gray-700 */
-            font-weight: 500;
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.2s;
-        }
-        .btn-secondary:hover {
-            background-color: #d1d5db; /* gray-300 */
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: 120px repeat(7, 1fr); 
-            gap: 0px; 
-            border: 1px solid #e5e7eb; /* gray-200 */
-            border-radius: 0.5rem; /* rounded-lg */
-            overflow: hidden; 
-        }
-        .calendar-header, .calendar-room, .calendar-booking, .calendar-day-header {
-            background-color: white;
-            padding: 0.75rem 0.5rem; 
+            align-items: center;
             text-align: center;
-            font-size: 0.8rem; /* text-xs */
-            border-bottom: 1px solid #e5e7eb; 
-            border-right: 1px solid #e5e7eb; 
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-top: 1.5rem;
+            color: #4b5563;
+            font-style: italic;
+            min-height: 250px;
+            width: 100%;
+            max-width: 600px;
         }
-        .calendar-grid div:last-child { border-right: 0; } 
-        .calendar-day-header {
-            font-weight: 600; 
-            color: #4b5563; /* gray-600 */
-            background-color: #f9fafb; /* gray-50 */
+        .stat-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
         }
-        .calendar-room {
-            font-weight: 500; 
-            color: #374151; /* gray-700 */
-            background-color: #f9fafb; /* gray-50 */
-            position: sticky;
-            left: 0;
-            z-index: 10;
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
-        .calendar-grid > div:nth-child(8n+1) { border-left: 0; } 
-
-
-        .calendar-booking {
-            min-height: 60px;
-            cursor: pointer;
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2563EB; /* blue-600 */
+            margin-bottom: 0.25rem;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #4B5563; /* gray-600 */
+        }
+        .legend { /* Estilo para leyendas de gráficos y explicaciones */
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            font-style: italic;
+            max-width: 90%;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .chart-container { /* Contenedor para gráficos de Chart.js */
             position: relative;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: normal; 
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
-            justify-content: center;
-            line-height: 1.3;
-            padding: 0.25rem;
+            margin: auto;
+            height: 45vh;
+            width: 90vw;
+            max-width: 700px;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
         }
-         .calendar-booking span { display: block; width: 100%; text-align: center; }
-        .booking-confirmed { background-color: #eff6ff; color: #2563eb; border: 1px solid #dbeafe;} 
-        .booking-checkin { background-color: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7;} 
-        .booking-checkout { background-color: #fefce8; color: #ca8a04; border: 1px solid #fef9c3;} 
-        .booking-cancelled { background-color: #fef2f2; color: #dc2626; border: 1px solid #fee2e2;} 
-        .booking-empty:hover {
-            background-color: #fffbeb; /* yellow-50 */
-            border-color: #f59e0b; /* yellow-500 */
-        }
-        .table-wrapper {
-            box-shadow: none; 
-            border: 1px solid #e5e7eb; /* gray-200 */
-            border-radius: 0.5rem; /* rounded-lg */
-            overflow: hidden;
-        }
-        .table th {
-            background-color: #f9fafb; /* gray-50 */
-            padding: 0.75rem 1rem; /* py-3 px-4 */
-            font-weight: 500; /* medium */
-        }
-        .table td {
-            padding: 0.75rem 1rem; /* py-3 px-4 */
+        .pie-chart-container {
+             position: relative;
+             margin: auto;
+             height: 40vh;
+             width: 70vw;
+             max-width: 400px;
+             margin-top: 1.5rem;
+             margin-bottom: 0.5rem;
         }
 
+        @media (max-width: 768px) {
+            .slide { padding: 3rem 1rem; }
+            h1 { font-size: 2.25rem; }
+            h2 { font-size: 1.75rem; }
+            .chart-placeholder-pitch { min-height: 200px; }
+            .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .chart-container, .pie-chart-container {
+                height: 55vh;
+                width: 95vw;
+            }
+            .flex-wrap.justify-center.items-start.gap-4.md\:gap-8 { /* Para el diagrama de flujo */
+                 flex-direction: column;
+                 gap: 1.5rem;
+                 align-items: center;
+            }
+            .fa-arrow-right.text-gray-400.hidden.md\:block.mt-4 {
+                display: none;
+            }
+        }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="bg-gray-100 text-gray-800 leading-relaxed">
 
-    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-30 flex flex-col p-4 space-y-1.5 overflow-y-auto">
-        <div class="text-3xl font-extrabold text-orange-500 mb-5 text-center py-3">
-            Chinola<span class="text-slate-800">Stay</span>
-        </div>
-        <nav class="flex-grow">
-            <a href="#" data-target="dashboard" class="nav-link active-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-home w-5 h-5"></i>
-                <span class="text-sm">Dashboard</span>
-            </a>
-            <a href="#" data-target="reservas" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-calendar-check w-5 h-5"></i>
-                <span class="text-sm">Reservas</span>
-            </a>
-             <a href="#" data-target="calendario" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-calendar-days w-5 h-5"></i>
-                <span class="text-sm">Calendario Global</span>
-            </a>
-            <a href="#" data-target="huespedes" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-users w-5 h-5"></i>
-                <span class="text-sm">Huéspedes</span>
-            </a>
-            <a href="#" data-target="recepcion" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-concierge-bell w-5 h-5"></i>
-                <span class="text-sm">Recepción</span>
-            </a>
-            <a href="#" data-target="housekeeping" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-broom w-5 h-5"></i>
-                <span class="text-sm">Housekeeping</span>
-            </a>
-            <a href="#" data-target="tarifas" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-tags w-5 h-5"></i>
-                <span class="text-sm">Tarifas y Planes</span>
-            </a>
-            <a href="#" data-target="reportes" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-chart-pie w-5 h-5"></i>
-                <span class="text-sm">Reportes</span>
-            </a>
-            <a href="#" data-target="configuracion_saas" class="nav-link flex items-center space-x-3 py-2.5 px-4 rounded-lg">
-                <i class="fas fa-cog w-5 h-5"></i>
-                <span class="text-sm">Configuración</span>
-            </a>
-        </nav>
-        <div class="mt-auto pt-4">
-             <button id="logoutButtonSaaS" class="w-full flex items-center justify-center space-x-2 py-2.5 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 transition-colors text-white text-sm font-medium">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Cerrar Sesión</span>
-            </button>
-        </div>
-    </aside>
+    <section id="intro" class="slide bg-gradient-to-br from-blue-700 via-teal-600 to-emerald-500 text-white text-center">
+        <img src="https://placehold.co/150x150/FFFFFF/10B981?text=L" alt="Logo Loanversores" class="mb-6 rounded-full shadow-lg mx-auto" style="width: 120px; height: 120px;">
+        <h1 class="text-5xl md:text-6xl font-extrabold mb-4">Loanversores</h1>
+        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Revolucionando el acceso al crédito y la inversión en República Dominicana.</p>
+        <p class="text-lg font-medium">Uniendo a personas para un futuro financiero más justo y rentable.</p>
+        <i class="fas fa-chevron-down text-3xl mt-16 animate-bounce"></i>
+    </section>
 
-    <div id="mainContentWrapper" class="main-content-wrapper flex-1 flex flex-col overflow-hidden ml-0 md:ml-[260px]">
-        <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center sticky top-0 z-20">
-            <div class="flex items-center">
-                <button id="sidebarToggle" class="md:hidden text-gray-500 hover:text-orange-500 focus:outline-none mr-4">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <div class="dropdown">
-                    <button class="flex items-center text-sm font-medium text-gray-700 hover:text-orange-600 focus:outline-none">
-                        <span class="mr-1.5"><i class="fas fa-building text-gray-400"></i> Chinola Group:</span>
-                        <span class="font-semibold mr-1.5">Hotel Restaurant Tell Alpin</span>
-                        <i class="fas fa-chevron-down text-xs text-gray-400"></i>
-                    </button>
-                    <div class="dropdown-content mt-2">
-                        <div class="px-4 py-2 text-xs text-gray-400 uppercase tracking-wider">Seleccionar Propiedad</div>
-                        <a href="#">Hotel Restaurant Tell Alpin</a>
-                        <a href="#">Resort Luna de Miel</a>
-                        <a href="#">Cabañas del Bosque</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="text-orange-600 hover:bg-orange-50"><i class="fas fa-plus-circle mr-2"></i>Añadir Propiedad</a>
-                    </div>
-                </div>
+    <section id="problema" class="slide bg-white">
+        <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-700">El Dolor del Mercado Actual</h2>
+        <div class="grid md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="bg-red-50 p-6 rounded-xl shadow-lg border-l-4 border-red-500">
+                <h3 class="text-2xl font-semibold mb-3 text-red-700"><i class="fas fa-user-injured mr-2"></i>Para Prestatarios: Un Laberinto Costoso</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li>Tasas de interés <strong class="text-red-600">excesivas</strong> (Bancos: ~15-26%+, Tarjetas: ~40-60%+, Informal: >240%).</li>
+                    <li>Procesos <strong class="text-red-600">lentos y burocráticos</strong> en la banca tradicional.</li>
+                    <li><strong class="text-red-600">Acceso limitado</strong> para perfiles solventes no tradicionales.</li>
+                    <li>Carga de <strong class="text-red-600">"deudas tóxicas"</strong> que impiden el progreso.</li>
+                </ul>
             </div>
-            <div class="flex items-center space-x-5">
-                <span class="pro-badge">Pro</span>
-                <button class="text-gray-500 hover:text-orange-500 relative">
-                    <i class="fas fa-bell text-lg"></i>
-                    <span class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-orange-500"></span>
-                </button>
-                <div class="dropdown">
-                    <img src="https://placehold.co/36x36/fed7aa/c2410c?text=N" alt="[Imagen de Perfil de Usuario]" class="w-9 h-9 rounded-full cursor-pointer border-2 border-transparent hover:border-orange-300">
-                    <div class="dropdown-content mt-2">
-                        <div class="px-4 py-3">
-                            <p class="text-sm font-semibold text-gray-800">Nico Admin</p>
-                            <p class="text-xs text-gray-500 truncate">admin@chinolagroup.com</p>
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <a href="#"><i class="fas fa-user-circle w-4 mr-2.5 text-gray-400"></i>Mi Perfil</a>
-                        <a href="#"><i class="fas fa-sliders-h w-4 mr-2.5 text-gray-400"></i>Configuración de Cuenta</a>
-                        <a href="#"><i class="fas fa-file-invoice-dollar w-4 mr-2.5 text-gray-400"></i>Facturación</a>
-                        <div class="dropdown-divider"></div>
-                        <button id="userLogoutButton" class="w-full text-left"><i class="fas fa-sign-out-alt w-4 mr-2.5 text-gray-400"></i>Cerrar Sesión</button>
-                    </div>
-                </div>
+            <div class="bg-yellow-50 p-6 rounded-xl shadow-lg border-l-4 border-yellow-500">
+                <h3 class="text-2xl font-semibold mb-3 text-yellow-700"><i class="fas fa-search-dollar mr-2"></i>Para Inversionistas: Opciones Limitadas</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li>Rendimientos <strong class="text-yellow-600">bajos</strong> en opciones seguras (CDP Bancos: ~7-9.5%).</li>
+                    <li>Alternativas con mayor retorno (Bolsa: ~8-11%) requieren <strong class="text-yellow-600">más capital o conocimiento</strong>.</li>
+                    <li>Falta de <strong class="text-yellow-600">transparencia y accesibilidad</strong> en inversiones rentables.</li>
+                </ul>
             </div>
-        </header>
-
-        <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 space-y-6">
-            
-            <section id="dashboard" class="page-section space-y-6">
-                 <h1 class="text-2xl font-semibold text-gray-800">Dashboard: Hotel Restaurant Tell Alpin</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="content-card kpi-card">
-                        <p class="text-sm text-gray-500 uppercase tracking-wide">Ocupación</p>
-                        <p class="value text-orange-600 mt-1">75%</p>
-                        <p class="percentage-change percentage-positive mt-2">+2.3% <span class="text-gray-500 text-xs">vs ayer</span></p>
-                    </div>
-                    <div class="content-card kpi-card">
-                        <p class="text-sm text-gray-500 uppercase tracking-wide">ADR</p>
-                        <p class="value text-blue-600 mt-1">$120.50</p>
-                        <p class="percentage-change percentage-negative mt-2">-1.5% <span class="text-gray-500 text-xs">vs ayer</span></p>
-                    </div>
-                    <div class="content-card kpi-card">
-                        <p class="text-sm text-gray-500 uppercase tracking-wide">RevPAR</p>
-                        <p class="value text-green-600 mt-1">$90.38</p>
-                        <p class="percentage-change percentage-positive mt-2">+0.8% <span class="text-gray-500 text-xs">vs ayer</span></p>
-                    </div>
-                     <div class="content-card kpi-card">
-                        <p class="text-sm text-gray-500 uppercase tracking-wide">Ingresos Hoy</p>
-                        <p class="value text-purple-600 mt-1">$8,750</p>
-                        <p class="text-gray-500 text-xs mt-2">Actualizado hace 5 min</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 content-card p-5">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-4">Estadísticas de Ocupación (Últimos 7 días)</h2>
-                        <div class="chart-placeholder">[Placeholder para Gráfico de Barras de Ocupación]</div>
-                    </div>
-                    <div class="content-card p-5">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-1">Actividad Reciente</h2>
-                        <p class="text-xs text-gray-400 mb-4">Llegadas y Salidas</p>
-                        <div class="space-y-3">
-                            <div class="flex items-center space-x-3">
-                                <div class="p-2 bg-green-100 rounded-full"><i class="fas fa-arrow-down text-green-600"></i></div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-800">Check-in: Familia Pérez (Hab. 301)</p>
-                                    <p class="text-xs text-gray-500">Hace 15 minutos</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="p-2 bg-red-100 rounded-full"><i class="fas fa-arrow-up text-red-600"></i></div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-800">Check-out: Sr. John Doe (Hab. 102)</p>
-                                    <p class="text-xs text-gray-500">Hace 45 minutos</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="p-2 bg-blue-100 rounded-full"><i class="fas fa-calendar-plus text-blue-600"></i></div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-800">Nueva Reserva: Ana López (2 noches)</p>
-                                    <p class="text-xs text-gray-500">Hace 1 hora</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="calendario" class="page-section hidden">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-3">
-                    <h2 class="text-xl font-semibold text-gray-800">Calendario de Ocupación Global</h2>
-                     <div class="flex items-center space-x-2">
-                        <button class="px-3 py-2 bg-white border border-gray-300 text-gray-600 rounded-md hover:bg-gray-100 text-xs font-medium"><i class="fas fa-chevron-left text-xs"></i></button>
-                        <input type="date" value="2025-05-12" class="px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500">
-                        <button class="px-3 py-2 bg-white border border-gray-300 text-gray-600 rounded-md hover:bg-gray-100 text-xs font-medium"><i class="fas fa-chevron-right text-xs"></i></button>
-                    </div>
-                </div>
-                <div class="content-card p-0"> <div class="overflow-x-auto">
-                        <div class="calendar-grid min-w-[1000px]">
-                            <div class="calendar-header sticky left-0 z-20">Habitación</div>
-                            <div class="calendar-day-header">Lun, 12 May</div>
-                            <div class="calendar-day-header">Mar, 13 May</div>
-                            <div class="calendar-day-header">Mié, 14 May</div>
-                            <div class="calendar-day-header">Jue, 15 May</div>
-                            <div class="calendar-day-header">Vie, 16 May</div>
-                            <div class="calendar-day-header">Sáb, 17 May</div>
-                            <div class="calendar-day-header">Dom, 18 May</div>
-
-                            <div class="calendar-room">S101</div>
-                            <div class="calendar-booking booking-confirmed" title="Reserva ID: 123, Huésped: Juan Pérez"><span>J. Pérez</span><span class="text-xs opacity-70">RVA-123</span></div>
-                            <div class="calendar-booking booking-confirmed" title="Reserva ID: 123, Huésped: Juan Pérez"><span>J. Pérez</span><span class="text-xs opacity-70">RVA-123</span></div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Sencilla 101', '2025-05-14')"></div>
-                            <div class="calendar-booking booking-checkin" title="Reserva ID: 124, Huésped: Ana Gómez"><span>A. Gómez (CI)</span><span class="text-xs opacity-70">RVA-124</span></div>
-                            <div class="calendar-booking booking-checkin" title="Reserva ID: 124, Huésped: Ana Gómez"><span>A. Gómez</span><span class="text-xs opacity-70">RVA-124</span></div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Sencilla 101', '2025-05-17')"></div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Sencilla 101', '2025-05-18')"></div>
-                            <div class="calendar-room">D201</div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Doble 201', '2025-05-12')"></div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Doble 201', '2025-05-13')"></div>
-                            <div class="calendar-booking booking-checkout" title="Reserva ID: 125, Huésped: Carlos López"><span>C. López (CO)</span><span class="text-xs opacity-70">RVA-125</span></div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Doble 201', '2025-05-15')"></div>
-                            <div class="calendar-booking booking-confirmed" title="Reserva ID: 126, Huésped: Laura B."><span>L. B.</span><span class="text-xs opacity-70">RVA-126</span></div>
-                            <div class="calendar-booking booking-confirmed" title="Reserva ID: 126, Huésped: Laura B."><span>L. B.</span><span class="text-xs opacity-70">RVA-126</span></div>
-                            <div class="calendar-booking booking-confirmed" title="Reserva ID: 126, Huésped: Laura B."><span>L. B.</span><span class="text-xs opacity-70">RVA-126</span></div>
-                            
-                            <div class="calendar-room">SU301</div>
-                            <div class="calendar-booking booking-checkin" title="Reserva ID: 127, Huésped: Familia Real"><span>F. Real (CI)</span><span class="text-xs opacity-70">RVA-127</span></div>
-                            <div class="calendar-booking booking-checkin" title="Reserva ID: 127, Huésped: Familia Real"><span>F. Real</span><span class="text-xs opacity-70">RVA-127</span></div>
-                            <div class="calendar-booking booking-checkin" title="Reserva ID: 127, Huésped: Familia Real"><span>F. Real</span><span class="text-xs opacity-70">RVA-127</span></div>
-                            <div class="calendar-booking booking-checkin" title="Reserva ID: 127, Huésped: Familia Real"><span>F. Real</span><span class="text-xs opacity-70">RVA-127</span></div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Suite 301', '2025-05-16')"></div>
-                            <div class="calendar-booking booking-cancelled" title="Reserva ID: 128, Huésped: Pedro Cancelado"><span>Cancelada</span><span class="text-xs opacity-70">RVA-128</span></div>
-                            <div class="calendar-booking booking-empty" onclick="openCrearReservaModal('Suite 301', '2025-05-18')"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="reservas" class="page-section hidden">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-3">
-                    <h2 class="text-xl font-semibold text-gray-800">Gestión de Reservas <span class="text-sm text-gray-500 font-normal">(Hotel Restaurant Tell Alpin)</span></h2>
-                    <button onclick="openCrearReservaModal()" class="btn-primary text-sm flex items-center self-start sm:self-center">
-                        <i class="fas fa-plus mr-2"></i> Nueva Reserva
-                    </button>
-                </div>
-                <div class="content-card p-0 table-wrapper"> <table class="table min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Huésped</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Habitación</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">RVA-00123</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Juan Pérez</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2025-05-12</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2025-05-14</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">Sencilla 101</td>
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Confirmada</span>
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-3">
-                                    <button class="text-orange-600 hover:text-orange-800"><i class="fas fa-pencil-alt"></i></button>
-                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
-                                    <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">RVA-00124</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Ana Gómez</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2025-05-15</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2025-05-17</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">Doble 202</td>
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Check-in</span>
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-3">
-                                    <button class="text-orange-600 hover:text-orange-800"><i class="fas fa-pencil-alt"></i></button>
-                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
-                                    <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="huespedes" class="page-section hidden">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-3">
-                    <h2 class="text-xl font-semibold text-gray-800">Gestión de Huéspedes <span class="text-sm text-gray-500 font-normal">(Global)</span></h2>
-                    <button class="btn-primary text-sm flex items-center self-start sm:self-center">
-                        <i class="fas fa-user-plus mr-2"></i> Añadir Huésped
-                    </button>
-                </div>
-                <div class="content-card p-5 text-center text-gray-500">
-                    [Aquí iría una tabla o lista de huéspedes con filtros y búsqueda]
-                </div>
-            </section>
-
-            <section id="recepcion" class="page-section hidden space-y-6">
-                <h2 class="text-xl font-semibold text-gray-800">Operaciones de Recepción <span class="text-sm text-gray-500 font-normal">(Hotel Restaurant Tell Alpin)</span></h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="content-card p-5">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-3"><i class="fas fa-door-open text-orange-500 mr-2"></i> Check-in del Día</h3>
-                        <p class="text-sm text-gray-500 mb-4">Lista de llegadas pendientes y proceso de check-in.</p>
-                        <button class="w-full btn-primary text-sm">Ver Llegadas e Iniciar Check-in</button>
-                    </div>
-                    <div class="content-card p-5">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-3"><i class="fas fa-door-closed text-orange-500 mr-2"></i> Check-out del Día</h3>
-                        <p class="text-sm text-gray-500 mb-4">Lista de salidas pendientes y proceso de check-out.</p>
-                        <button class="w-full btn-primary text-sm bg-green-500 hover:bg-green-600">Ver Salidas e Iniciar Check-out</button>
-                    </div>
-                </div>
-                 <div class="content-card p-5">
-                     <h3 class="text-lg font-semibold text-gray-700 mb-3"><i class="fas fa-concierge-bell text-orange-500 mr-2"></i> Solicitudes y Quejas</h3>
-                     <p class="text-sm text-gray-500">[Listado y gestión de solicitudes de huéspedes en curso]</p>
-                 </div>
-            </section>
-            
-            <section id="housekeeping" class="page-section hidden">
-                 <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-3">
-                    <h2 class="text-xl font-semibold text-gray-800">Gestión de Housekeeping <span class="text-sm text-gray-500 font-normal">(Hotel Restaurant Tell Alpin)</span></h2>
-                    <button class="btn-secondary text-sm flex items-center self-start sm:self-center">
-                        <i class="fas fa-tasks mr-2"></i> Asignar Tareas
-                    </button>
-                </div>
-                <div class="content-card p-0 table-wrapper">
-                     <table class="table min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Habitación</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado Limpieza</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ocupación</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prioridad</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asignado a</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">S101</td>
-                                <td class="px-4 py-3 whitespace-nowrap"><span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800">Sucia</span></td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">Ocupada (Salida)</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-red-600 font-medium">Alta</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">Maria L.</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">
-                                    <select class="p-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm">
-                                        <option value="sucia">Sucia</option>
-                                        <option value="en_proceso">En Proceso</option>
-                                        <option value="limpia">Limpia</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">D205</td>
-                                <td class="px-4 py-3 whitespace-nowrap"><span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">Limpia</span></td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">Vacante</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">Normal</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">Juan P.</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">
-                                     <select class="p-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm">
-                                        <option value="limpia">Limpia</option>
-                                        <option value="sucia">Sucia</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="tarifas" class="page-section hidden">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-3">
-                    <h2 class="text-xl font-semibold text-gray-800">Gestión de Tarifas y Planes <span class="text-sm text-gray-500 font-normal">(Global)</span></h2>
-                    <button class="btn-primary text-sm flex items-center self-start sm:self-center">
-                        <i class="fas fa-plus mr-2"></i> Crear Plan de Tarifa
-                    </button>
-                </div>
-                <div class="content-card p-5 text-center text-gray-500">
-                    [Aquí iría una lista/tabla de planes de tarifas con opciones para editar, duplicar, y gestionar precios y restricciones]
-                </div>
-            </section>
-            
-            <section id="reportes" class="page-section hidden">
-                <h2 class="text-xl font-semibold text-gray-800 mb-5">Reportes y Análisis <span class="text-sm text-gray-500 font-normal">(Global / Por Propiedad)</span></h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="content-card p-5 hover:shadow-lg transition-shadow">
-                        <i class="fas fa-chart-bar text-3xl text-orange-500 mb-3"></i>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-1">Informe de Ocupación</h3>
-                        <p class="text-sm text-gray-500 mb-3">Diario, mensual, anual. Por propiedad o consolidado.</p>
-                        <button class="btn-secondary text-xs w-full">Generar Reporte</button>
-                    </div>
-                    <div class="content-card p-5 hover:shadow-lg transition-shadow">
-                        <i class="fas fa-dollar-sign text-3xl text-green-500 mb-3"></i>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-1">Informe de Ingresos</h3>
-                        <p class="text-sm text-gray-500 mb-3">Detallado por categoría, ADR, RevPAR.</p>
-                        <button class="btn-secondary text-xs w-full">Generar Reporte</button>
-                    </div>
-                    <div class="content-card p-5 hover:shadow-lg transition-shadow">
-                        <i class="fas fa-users text-3xl text-blue-500 mb-3"></i>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-1">Informe de Huéspedes</h3>
-                        <p class="text-sm text-gray-500 mb-3">Segmentación, nacionalidades, repetitivos.</p>
-                        <button class="btn-secondary text-xs w-full">Generar Reporte</button>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="configuracion_saas" class="page-section hidden space-y-6">
-                <h2 class="text-xl font-semibold text-gray-800">Configuración de la Plataforma</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="content-card p-5">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-building text-2xl text-orange-500 mr-3"></i>
-                            <h3 class="text-lg font-semibold text-gray-700">Gestión de Propiedades</h3>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4">Añade, edita y gestiona las propiedades de tu grupo.</p>
-                        <button class="w-full btn-secondary text-sm">Administrar Propiedades</button>
-                    </div>
-                    <div class="content-card p-5">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-users-cog text-2xl text-orange-500 mr-3"></i>
-                            <h3 class="text-lg font-semibold text-gray-700">Usuarios y Roles</h3>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4">Gestiona los accesos y roles de los usuarios de tu equipo.</p>
-                        <button class="w-full btn-secondary text-sm">Administrar Usuarios</button>
-                    </div>
-                    <div class="content-card p-5">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-file-invoice-dollar text-2xl text-orange-500 mr-3"></i>
-                            <h3 class="text-lg font-semibold text-gray-700">Planes y Facturación</h3>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4">Consulta tu plan actual, historial de pagos y datos de facturación.</p>
-                        <button class="w-full btn-secondary text-sm">Ver Facturación</button>
-                    </div>
-                     <div class="content-card p-5">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-user-shield text-2xl text-orange-500 mr-3"></i>
-                            <h3 class="text-lg font-semibold text-gray-700">Seguridad y Cuenta</h3>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4">Ajustes de seguridad, API keys, y datos de la organización.</p>
-                        <button class="w-full btn-secondary text-sm">Ajustes de Cuenta</button>
-                    </div>
-                     <div class="content-card p-5">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-plug text-2xl text-orange-500 mr-3"></i>
-                            <h3 class="text-lg font-semibold text-gray-700">Integraciones</h3>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4">Conecta ChinolaStay con otras herramientas.</p>
-                        <button class="w-full btn-secondary text-sm">Ver Integraciones</button>
-                    </div>
-                     <div class="content-card p-5">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-palette text-2xl text-orange-500 mr-3"></i>
-                            <h3 class="text-lg font-semibold text-gray-700">Personalización</h3>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4">Adapta plantillas de correo, facturas y más.</p>
-                        <button class="w-full btn-secondary text-sm">Personalizar Plantillas</button>
-                    </div>
-                </div>
-            </section>
-
-
-        </main>
-    </div>
-
-    <div id="reservaModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-60 z-50 p-4">
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h3 id="modalTitle" class="text-xl font-semibold text-gray-800">Crear Nueva Reserva</h3>
-                <button onclick="closeReservaModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-            </div>
-            <form id="reservaForm" class="space-y-5">
-                <div>
-                    <label for="reservaCheckin" class="block text-sm font-medium text-gray-700 mb-1">Fecha Check-in</label>
-                    <input type="date" id="reservaCheckin" name="reservaCheckin" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
-                </div>
-                <div>
-                    <label for="reservaCheckout" class="block text-sm font-medium text-gray-700 mb-1">Fecha Check-out</label>
-                    <input type="date" id="reservaCheckout" name="reservaCheckout" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
-                </div>
-                <div>
-                    <label for="reservaTipoHabitacion" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Habitación</label>
-                    <select id="reservaTipoHabitacion" name="reservaTipoHabitacion" required class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
-                        <option>Sencilla Estándar</option>
-                        <option>Doble con Balcón</option>
-                        <option>Suite Presidencial</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="reservaHuespedNombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Huésped Principal</label>
-                    <input type="text" id="reservaHuespedNombre" name="reservaHuespedNombre" required placeholder="Nombre completo" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
-                </div>
-                 <div>
-                    <label for="reservaHuespedEmailModal" class="block text-sm font-medium text-gray-700 mb-1">Email del Huésped</label>
-                    <input type="email" id="reservaHuespedEmailModal" name="reservaHuespedEmail" placeholder="correo@ejemplo.com" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
-                </div>
-                <div>
-                    <label for="reservaNotasModal" class="block text-sm font-medium text-gray-700 mb-1">Notas Adicionales</label>
-                    <textarea id="reservaNotasModal" name="reservaNotas" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm" placeholder="Preferencias, solicitudes especiales..."></textarea>
-                </div>
-                <div class="flex justify-end space-x-3 pt-4">
-                    <button type="button" onclick="closeReservaModal()" class="btn-secondary text-sm">Cancelar</button>
-                    <button type="submit" class="btn-primary text-sm">Guardar Reserva</button>
-                </div>
-            </form>
         </div>
-    </div>
-    
-    <div id="notificationToast" class="fixed bottom-6 right-6 bg-gray-800 text-white py-3 px-5 rounded-lg shadow-xl transition-all duration-300 opacity-0 transform translate-y-10 z-[100]">
-        <span id="notificationMessage" class="text-sm"></span>
-    </div>
+        <p class="mt-10 text-center text-xl text-gray-800 font-semibold max-w-3xl">Millones de dominicanos y sus ahorros merecen algo mejor.</p>
+    </section>
+
+    <section id="solucion-puv" class="slide bg-teal-50">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center text-teal-800">Nuestra Solución: Loanversores</h2>
+        <p class="text-center text-gray-700 text-lg mb-10 max-w-3xl">Una plataforma tecnológica P2P/Crowdfunding que <strong class="highlight">conecta directamente</strong> a prestatarios con inversionistas, creando un ecosistema financiero más <strong class="highlight">justo, transparente y eficiente.</strong></p>
+
+        <div class="grid md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="bg-white p-8 rounded-xl shadow-xl transform hover:scale-105 transition duration-300">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-users-rays text-4xl text-blue-600 mr-4"></i>
+                    <h3 class="text-2xl font-bold text-blue-700">Para Prestatarios</h3>
+                </div>
+                <p class="text-gray-700 mb-3 text-lg">"Tu préstamo personal en línea con tasas justas (<strong class="highlight">desde ~8.9% - 14% anual</strong>) y un proceso rápido y transparente. ¡Consolida tus deudas y toma el control!"</p>
+                <ul class="list-disc list-inside space-y-1 text-gray-600 text-sm">
+                    <li>Tasas competitivas y personalizadas (8.9% a 38.9% según riesgo).</li>
+                    <li>Proceso 100% online, ágil y sin burocracia.</li>
+                    <li>Ideal para consolidación de deudas.</li>
+                </ul>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-xl transform hover:scale-105 transition duration-300">
+                 <div class="flex items-center mb-4">
+                    <i class="fas fa-seedling text-4xl text-green-600 mr-4"></i>
+                    <h3 class="text-2xl font-bold text-green-700">Para Inversionistas</h3>
+                </div>
+                <p class="text-gray-700 mb-3 text-lg">"Invierte en préstamos y obtén rendimientos atractivos (<strong class="highlight">objetivo neto 11-12% anual</strong>, potencial hasta 17%+). Diversifica y haz crecer tu dinero."</p>
+                 <ul class="list-disc list-inside space-y-1 text-gray-600 text-sm">
+                    <li>Rendimientos superiores a opciones tradicionales.</li>
+                    <li>Accesible desde montos bajos.</li>
+                    <li>Transparencia total y control sobre tus inversiones.</li>
+                 </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="producto" class="slide bg-white">
+        <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-700">¿Cómo lo Hacemos Posible?</h2>
+        <div class="grid md:grid-cols-3 gap-8 w-full max-w-6xl">
+            <div class="stat-card p-6">
+                <i class="fas fa-cogs text-5xl text-blue-600 mb-4"></i>
+                <h4 class="text-xl font-semibold mb-2">Plataforma Tecnológica Robusta</h4>
+                <p class="text-gray-600 text-sm">100% online, segura y escalable para una experiencia de usuario fluida.</p>
+            </div>
+            <div class="stat-card p-6">
+                <i class="fas fa-user-shield text-5xl text-red-600 mb-4"></i>
+                <h4 class="text-xl font-semibold mb-2">Scoring Crediticio Inteligente</h4>
+                <p class="text-gray-600 text-sm">Evaluación precisa del riesgo con datos de burós y (futuro) ML/IA para asignar tasas justas y variables.</p>
+            </div>
+            <div class="stat-card p-6">
+                <i class="fas fa-tags text-5xl text-teal-600 mb-4"></i>
+                <h4 class="text-xl font-semibold mb-2">Pricing Basado en Riesgo</h4>
+                <p class="text-gray-600 text-sm">Tasas desde 8.9% hasta 38.9% que reflejan el perfil de cada prestatario, beneficiando a todos.</p>
+            </div>
+        </div>
+        <div class="mt-10 w-full max-w-5xl text-center">
+             <h3 class="text-xl font-semibold mb-4 text-gray-700">Flujo Simplificado</h3>
+             <div class="flex flex-wrap justify-center items-start gap-4 md:gap-8">
+                 <div class="flex flex-col items-center text-blue-600 w-36"> <i class="fas fa-file-signature text-4xl mb-2"></i> <span class="text-sm font-medium text-center">1. Solicitud Online (Prestatario)</span> </div>
+                 <i class="fas fa-arrow-right text-gray-400 hidden md:block mt-4"></i>
+                 <div class="flex flex-col items-center text-purple-600 w-36"> <i class="fas fa-user-shield text-4xl mb-2"></i> <span class="text-sm font-medium text-center">2. Scoring y Aprobación</span> </div>
+                 <i class="fas fa-arrow-right text-gray-400 hidden md:block mt-4"></i>
+                 <div class="flex flex-col items-center text-orange-600 w-36"> <i class="fas fa-users text-4xl mb-2"></i> <span class="text-sm font-medium text-center">3. Inversionistas Fondean</span> <p class="legend">Crowdfunding</p> </div>
+                 <i class="fas fa-arrow-right text-gray-400 hidden md:block mt-4"></i>
+                 <div class="flex flex-col items-center text-green-600 w-36"> <i class="fas fa-hand-holding-dollar text-4xl mb-2"></i> <span class="text-sm font-medium text-center">4. Desembolso y Retornos</span> </div>
+             </div>
+        </div>
+    </section>
+
+    <section id="mercado" class="slide bg-gray-100">
+        <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-700">Nuestro Mercado: Una Gran Oportunidad</h2>
+        <div class="grid md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold mb-3 text-blue-700">Prestatarios Objetivo</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-600">
+                    <li>Asalariados y profesionales independientes (25-55 años).</li>
+                    <li>Con buen historial crediticio, buscando consolidar deudas o financiar proyectos.</li>
+                    <li>Bancarizados y con acceso a internet.</li>
+                    <li><strong class="text-blue-600">Early Adopters:</strong> Jóvenes tecnológicamente adeptos, frustrados con la banca tradicional.</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold mb-3 text-green-700">Inversionistas Objetivo</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-600">
+                    <li>Individuos con capital para invertir (desde montos bajos).</li>
+                    <li>Buscando rendimientos superiores y diversificación.</li>
+                    <li>Cómodos con plataformas digitales.</li>
+                    <li><strong class="text-green-600">Early Adopters:</strong> Con experiencia en inversiones alternativas, buscando innovación.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="chart-placeholder-pitch mt-10">
+            <i class="fas fa-chart-pie text-6xl text-gray-400 mb-4"></i>
+            <p class="text-lg font-semibold">Mercado Potencial Estimado en RD</p>
+            <p>(Visualizar tamaño del mercado de crédito de consumo, ahorro e inversión desatendida)</p>
+            <p class="text-sm mt-2">Ej: Millones de personas con necesidad de consolidación, miles de millones en ahorros buscando mejor rendimiento.</p>
+        </div>
+    </section>
+
+    <section id="ingresos-metricas" class="slide bg-white">
+        <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-700">Modelo de Negocio Sostenible</h2>
+        <div class="grid md:grid-cols-2 gap-12 w-full max-w-5xl">
+            <div>
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-700"><i class="fas fa-dollar-sign mr-2"></i>Flujos de Ingresos (Plataforma)</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start"><i class="fas fa-check-circle text-indigo-500 mr-3 mt-1"></i><div><strong class="font-medium">Comisión de Originación:</strong> ~1% sobre el monto del préstamo (prestatario).</div></li>
+                    <li class="flex items-start"><i class="fas fa-check-circle text-indigo-500 mr-3 mt-1"></i><div><strong class="font-medium">Comisión de Gestión:</strong> ~1% anual sobre saldo invertido (inversionista).</div></li>
+                    <li class="flex items-start"><i class="fas fa-check-circle text-indigo-500 mr-3 mt-1"></i><div><strong class="font-medium">Spread Potencial:</strong> Parte del diferencial de tasas.</div></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-2xl font-semibold mb-4 text-teal-700"><i class="fas fa-tachometer-alt mr-2"></i>Métricas Clave de Éxito</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start"><i class="fas fa-arrow-up-right-dots text-teal-500 mr-3 mt-1"></i><div>Volumen de Préstamos Originados.</div></li>
+                    <li class="flex items-start"><i class="fas fa-users text-teal-500 mr-3 mt-1"></i><div>Crecimiento de Usuarios (Prestatarios e Inversionistas).</div></li>
+                    <li class="flex items-start"><i class="fas fa-exclamation-triangle text-red-500 mr-3 mt-1"></i><div>Tasa de Default de la Cartera (RI).</div></li>
+                    <li class="flex items-start"><i class="fas fa-hand-holding-heart text-green-500 mr-3 mt-1"></i><div>Rendimiento Neto Promedio para Inversionistas.</div></li>
+                    <li class="flex items-start"><i class="fas fa-bullseye text-teal-500 mr-3 mt-1"></i><div>Costo de Adquisición por Cliente (CPA).</div></li>
+                </ul>
+            </div>
+        </div>
+         <div class="pie-chart-container w-full max-w-md mt-10">
+             <canvas id="ingresosChart"></canvas>
+        </div>
+        <p class="legend">
+            Desglose estimado de ingresos brutos de la PLATAFORMA. <br>
+            <strong>Spread:</strong> Diferencia entre interés cobrado e interés pagado (antes de comisiones). <br>
+            <strong>Comisión Originación:</strong> Tarifa única al inicio del préstamo (pagada por prestatario). <br>
+            <strong>Comisión Gestión:</strong> Tarifa anual por administrar la inversión (pagada por inversionista).
+        </p>
+    </section>
+
+    <section id="ventaja" class="slide bg-gray-100">
+        <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-700">Nuestra Ventaja Competitiva</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+            <div class="stat-card p-6">
+                <i class="fas fa-brain text-4xl text-blue-600 mb-3"></i>
+                <h4 class="text-lg font-semibold">Scoring Adaptado a RD</h4>
+                <p class="text-sm text-gray-600">Precisión en la evaluación de riesgo local.</p>
+            </div>
+            <div class="stat-card p-6">
+                <i class="fas fa-rocket text-4xl text-teal-600 mb-3"></i>
+                <h4 class="text-lg font-semibold">Agilidad y Experiencia Digital</h4>
+                <p class="text-sm text-gray-600">Procesos rápidos, sencillos y 100% online.</p>
+            </div>
+            <div class="stat-card p-6">
+                <i class="fas fa-shield-heart text-4xl text-emerald-600 mb-3"></i>
+                <h4 class="text-lg font-semibold">Comunidad y Confianza</h4>
+                <p class="text-sm text-gray-600">Transparencia radical y beneficio mutuo.</p>
+            </div>
+            <div class="stat-card p-6">
+                <i class="fas fa-dollar-sign text-4xl text-indigo-600 mb-3"></i>
+                <h4 class="text-lg font-semibold">Eficiencia de Costos</h4>
+                <p class="text-sm text-gray-600">Tecnología lean para tasas y rendimientos competitivos.</p>
+            </div>
+            <div class="stat-card p-6">
+                <i class="fas fa-link text-4xl text-orange-500 mb-3"></i>
+                <h4 class="text-lg font-semibold">Foco en Consolidación</h4>
+                <p class="text-sm text-gray-600">Solución a un dolor real y urgente.</p>
+            </div>
+             <div class="stat-card p-6">
+                <i class="fas fa-users-cog text-4xl text-purple-600 mb-3"></i>
+                <h4 class="text-lg font-semibold">Equipo Apasionado</h4>
+                <p class="text-sm text-gray-600">Conocimiento local y compromiso con la misión.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="equipo" class="slide bg-gradient-to-r from-slate-700 to-gray-800 text-white">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center">Construyamos el Futuro Financiero de RD, Juntos</h2>
+        <div class="text-center max-w-2xl mx-auto">
+            <img src="https://placehold.co/120x120/FFFFFF/10B981?text=HM" alt="Hans Minyetty" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-teal-400 shadow-lg">
+            <p class="text-xl font-semibold">Hans Minyetty, Fundador</p>
+            <p class="text-gray-300 mb-8">"Con la visión de democratizar el acceso a servicios financieros justos y eficientes."</p>
+
+            <h3 class="text-2xl font-semibold mb-4">Buscamos Co-Fundadores Apasionados:</h3>
+            <div class="grid md:grid-cols-3 gap-4 mb-8 text-gray-200">
+                <div class="bg-gray-700 p-4 rounded-lg shadow-md"><i class="fas fa-laptop-code mr-2"></i>CTO (Tecnología)</div>
+                <div class="bg-gray-700 p-4 rounded-lg shadow-md"><i class="fas fa-chart-pie mr-2"></i>CRO (Riesgos)</div>
+                <div class="bg-gray-700 p-4 rounded-lg shadow-md"><i class="fas fa-bullhorn mr-2"></i>COO/CMO (Operaciones/Mktg)</div>
+            </div>
+            <p class="text-lg">Si compartes nuestra visión y tienes experiencia relevante, <strong class="highlight">¡queremos conocerte!</strong></p>
+        </div>
+    </section>
+
+    <section id="oportunidad" class="slide bg-emerald-600 text-white">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center">Una Oportunidad de Inversión con Impacto</h2>
+        <div class="grid md:grid-cols-3 gap-6 w-full max-w-5xl text-center mb-8">
+            <div class="stat-card bg-emerald-700 text-white p-6">
+                <div class="stat-number text-emerald-300">RD$ +100MM</div>
+                <div class="stat-label">Mercado Potencial (Consolidación y Préstamos Personales Desatendidos)</div>
+            </div>
+            <div class="stat-card bg-emerald-700 text-white p-6">
+                <div class="stat-number text-emerald-300">11-17%+</div>
+                <div class="stat-label">Potencial Retorno Neto Anual para Inversionistas en Loanversores</div>
+            </div>
+            <div class="stat-card bg-emerald-700 text-white p-6">
+                <div class="stat-number text-emerald-300">Alto</div>
+                <div class="stat-label">Impacto Social y Financiero Positivo en RD</div>
+            </div>
+        </div>
+        <p class="text-xl text-center mb-4 max-w-3xl">Loanversores está posicionado para capturar una porción significativa de un mercado desatendido, ofreciendo una solución innovadora y escalable.</p>
+        <h3 class="text-2xl font-semibold mb-3 text-center">Buscamos Inversión Semilla para:</h3>
+        <ul class="list-disc list-inside text-lg space-y-1 mb-8 max-w-md mx-auto text-left pl-4">
+            <li>Desarrollo final de la plataforma y MVP.</li>
+            <li>Ejecución del programa piloto y validación del modelo.</li>
+            <li>Costos iniciales de marketing y operaciones.</li>
+            <li>Navegación regulatoria (Sandbox).</li>
+        </ul>
+        <p class="text-xl font-semibold text-center">¡Únete a nosotros para ser parte de la transformación financiera de República Dominicana!</p>
+    </section>
+
+    <section id="proximos-pasos-contacto" class="slide bg-gray-800 text-white text-center">
+         <h2 class="text-3xl md:text-4xl font-bold mb-6">Próximos Pasos</h2>
+         <div class="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-10 text-left">
+             <div class="bg-gray-700 p-4 rounded-lg transform hover:scale-105 transition duration-300">
+                 <h4 class="font-semibold text-teal-400 mb-1"><i class="fas fa-flag-checkered mr-1"></i>Fase 1: Validación (3-6 meses)</h4>
+                 <p class="text-sm text-gray-300">Consulta Legal/Regulatoria, Refinar Modelo Financiero y Scoring, Plan Piloto detallado.</p>
+             </div>
+              <div class="bg-gray-700 p-4 rounded-lg transform hover:scale-105 transition duration-300">
+                 <h4 class="font-semibold text-teal-400 mb-1"><i class="fas fa-cogs mr-1"></i>Fase 2: Desarrollo y Piloto (6-9 meses)</h4>
+                 <p class="text-sm text-gray-300">Construir MVP, ejecutar piloto controlado, obtener feedback y ajustar.</p>
+             </div>
+              <div class="bg-gray-700 p-4 rounded-lg transform hover:scale-105 transition duration-300">
+                 <h4 class="font-semibold text-teal-400 mb-1"><i class="fas fa-rocket mr-1"></i>Fase 3: Lanzamiento y Crecimiento</h4>
+                 <p class="text-sm text-gray-300">Lanzamiento limitado (Sandbox), escalar operaciones y marketing.</p>
+             </div>
+         </div>
+         <hr class="border-gray-600 w-1/2 mx-auto my-8">
+         <h2 class="text-3xl md:text-4xl font-bold mb-6">Hablemos</h2>
+         <p class="mb-4 text-lg">Si compartes nuestra visión y quieres ser parte de Loanversores como co-fundador, inversionista o socio estratégico:</p>
+         <p class="text-xl font-semibold">Hans Minyetty</p>
+         <p><a href="mailto:[tu_email@ejemplo.com]" class="text-emerald-400 hover:text-emerald-300 text-lg">[tu_email@ejemplo.com]</a></p> <p><a href="[tu_linkedin_url]" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 text-lg">[Tu Perfil de LinkedIn (Opcional)]</a></p> </section>
 
     <script>
-        const navLinks = document.querySelectorAll('.nav-link');
-        const pageSections = document.querySelectorAll('.page-section');
-        const sidebar = document.getElementById('sidebar');
-        const mainContentWrapper = document.getElementById('mainContentWrapper');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const reservaModal = document.getElementById('reservaModal');
-        const reservaForm = document.getElementById('reservaForm');
-        const modalTitle = document.getElementById('modalTitle');
-        // Modal inputs for pre-filling (ensure these IDs exist in the modal form if used)
-        // const reservaCheckinInput = document.getElementById('reservaCheckin'); 
-        // const reservaHabitacionInput = document.getElementById('reservaHabitacion');
+        // --- Script para inicializar los gráficos con Chart.js ---
 
-        const logoutButtonSaaS = document.getElementById('logoutButtonSaaS');
-        const userLogoutButton = document.getElementById('userLogoutButton');
-        const notificationToast = document.getElementById('notificationToast');
-        const notificationMessage = document.getElementById('notificationMessage');
+        // --- Datos para Gráficos (Valores Representativos) ---
+        const tasaPrestamoBanco = 17; // Promedio representativo (Rango ~15-26%+)
+        const tasaTarjetaCredito = 50; // Promedio representativo (Rango ~40-60%+)
+        const tasaInformal = 240; // Referencia alta
+        const tasaLoanversoresDesde = 14; // Tasa "desde" (para el gráfico)
+        // Rango real de Loanversores para prestatarios: 8.9% a 38.9%
 
-        function showNotification(message, type = 'success') {
-            notificationMessage.textContent = message;
-            notificationToast.classList.remove('bg-gray-800', 'bg-red-600', 'bg-blue-600', 'opacity-0', 'translate-y-10');
-            notificationToast.classList.add('opacity-100', 'transform-none');
+        const rendimientoPuestoBolsa = 9.5; // Promedio representativo (Rango ~8-11%)
+        const rendimientoCertificadoDeposito = 8.5; // Promedio representativo (Rango ~7-9.5%)
+        const rendimientoLoanversoresObjetivo = 11.5; // Objetivo 11-12% (potencial 17%+)
 
-            let bgColor = 'bg-gray-800'; // Default for success or info
-            if (type === 'error') bgColor = 'bg-red-600';
-            else if (type === 'info') bgColor = 'bg-blue-600';
-            
-            notificationToast.classList.add(bgColor);
-            
-            setTimeout(() => {
-                notificationToast.classList.remove('opacity-100', 'transform-none', bgColor);
-                notificationToast.classList.add('opacity-0', 'translate-y-10');
-            }, 3000);
+        // --- Funciones Auxiliares ---
+        function formatTooltip(context) {
+            let label = context.dataset.label || '';
+            if (label) { label += ': '; }
+            const dataLabel = context.label;
+            const value = context.parsed.y;
+
+            if (dataLabel === 'Informal') { label += '> 240%'; }
+            else if (dataLabel === 'Tarjeta Crédito') { label += '~40-60%+'; }
+            else if (dataLabel === 'Préstamo Personal (Bancos)') { label += '~15-26%+'; }
+            else if (dataLabel === 'Loanversores (Desde)') { label += `Desde ${tasaLoanversoresDesde}% (Rango completo: 8.9% - 38.9%)`; } // Aclarar rango completo
+            else if (dataLabel === 'Puesto Bolsa (Bonos DOP)') { label += `~8-11%`; }
+            else if (dataLabel === 'Certificado Depósito (Bancos)') { label += `~7-9.5%`; }
+            else if (dataLabel === 'Loanversores OBJETIVO Neto') { label += `11-12% (Potencial hasta 17%+)`; } // Aclarar potencial
+            else if (value !== null) { label += value + '%'; }
+            return label;
         }
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.dataset.target;
+        // --- Inicialización de Gráficos ---
 
-                pageSections.forEach(section => section.classList.add('hidden'));
-                const targetSection = document.getElementById(targetId);
-                if (targetSection) targetSection.classList.remove('hidden');
-
-                navLinks.forEach(navLink => navLink.classList.remove('active-link'));
-                link.classList.add('active-link');
-
-                if (window.innerWidth < 768 && sidebar && !sidebar.classList.contains('sidebar-closed')) {
-                    sidebar.classList.add('sidebar-closed');
-                    mainContentWrapper.classList.add('main-content-wrapper-full');
-                    mainContentWrapper.classList.remove('md:ml-[260px]');
-                }
-            });
-        });
-        
-        if (sidebarToggle && sidebar && mainContentWrapper) {
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('sidebar-closed');
-                if (sidebar.classList.contains('sidebar-closed')) {
-                    mainContentWrapper.classList.add('main-content-wrapper-full');
-                    mainContentWrapper.classList.remove('md:ml-[260px]');
-
-                } else {
-                    mainContentWrapper.classList.remove('main-content-wrapper-full');
-                    if (window.innerWidth >= 768) { 
-                         mainContentWrapper.classList.add('md:ml-[260px]');
-                    }
+        // Gráfico 1: Tasas de Préstamo Comparativas
+        const ctxTasaPrestamo = document.getElementById('tasaPrestamoChart');
+        if (ctxTasaPrestamo) {
+            new Chart(ctxTasaPrestamo.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Informal', 'Tarjeta Crédito', 'Préstamo Personal (Bancos)', 'Loanversores (Desde)'],
+                    datasets: [{
+                        label: 'Tasa Anual Estimada (%)',
+                        data: [tasaInformal, tasaTarjetaCredito, tasaPrestamoBanco, tasaLoanversoresDesde],
+                        backgroundColor: ['rgba(220, 38, 38, 0.7)', 'rgba(239, 68, 68, 0.7)', 'rgba(248, 113, 113, 0.7)', 'rgba(16, 185, 129, 0.9)'],
+                        borderColor: ['rgba(185, 28, 28, 1)', 'rgba(220, 38, 38, 1)', 'rgba(239, 68, 68, 1)', 'rgba(4, 120, 87, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: { y: { beginAtZero: true, max: 65, title: { display: true, text: 'Tasa Anual (%)' } }, x: { ticks: { autoSkip: false } } },
+                    plugins: { legend: { display: false }, title: { display: true, text: 'Comparativa Tasas Préstamo (vs Loanversores "Desde")' }, tooltip: { callbacks: { label: formatTooltip } } },
+                    responsive: true, maintainAspectRatio: false
                 }
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.innerWidth < 768 && sidebar) {
-                sidebar.classList.add('sidebar-closed');
-                mainContentWrapper.classList.add('main-content-wrapper-full');
-                mainContentWrapper.classList.remove('md:ml-[260px]');
-            } else if (sidebar) { 
-                 mainContentWrapper.classList.add('md:ml-[260px]');
-                 mainContentWrapper.classList.remove('main-content-wrapper-full');
-            }
-
-            const initialSection = document.getElementById('dashboard');
-            if (initialSection) initialSection.classList.remove('hidden');
-            
-            const initialLink = document.querySelector('.nav-link[data-target="dashboard"]');
-            if (initialLink) initialLink.classList.add('active-link');
-        });
-
-        function openCrearReservaModal(habitacion = null, fecha = null) {
-            if (!reservaModal || !reservaForm || !modalTitle) return;
-            modalTitle.textContent = 'Crear Nueva Reserva';
-            reservaForm.reset(); 
-            
-            // Example: If you have inputs in modal with these IDs for pre-filling
-            const reservaHabitacionInputModal = document.getElementById('reservaHabitacion'); // Assuming this ID exists in modal
-            const reservaCheckinInputModal = document.getElementById('reservaCheckin'); // Assuming this ID exists in modal
-
-            if (habitacion && reservaHabitacionInputModal) reservaHabitacionInputModal.value = habitacion;
-            if (fecha && reservaCheckinInputModal) reservaCheckinInputModal.value = fecha;
-            reservaModal.classList.add('open');
-        }
-
-        function closeReservaModal() {
-            if (reservaModal) reservaModal.classList.remove('open');
-        }
-
-        if (reservaForm) {
-            reservaForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                console.log('Reserva guardada (simulado):', Object.fromEntries(new FormData(e.target)));
-                closeReservaModal();
-                showNotification('Reserva creada exitosamente.', 'success');
+        // Gráfico 2: Tasas de Inversión (Objetivo Loanversores Ordenado)
+        const ctxTasaInversionGoal = document.getElementById('tasaInversionGoalChart');
+        if (ctxTasaInversionGoal) {
+            new Chart(ctxTasaInversionGoal.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Loanversores OBJETIVO Neto', 'Puesto Bolsa (Bonos DOP)', 'Certificado Depósito (Bancos)'],
+                    datasets: [{
+                        label: 'Rendimiento Anual Objetivo (%)',
+                        data: [rendimientoLoanversoresObjetivo, rendimientoPuestoBolsa, rendimientoCertificadoDeposito],
+                        backgroundColor: ['rgba(16, 185, 129, 0.9)', 'rgba(96, 165, 250, 0.7)', 'rgba(167, 139, 250, 0.7)'],
+                        borderColor: ['rgba(4, 120, 87, 1)', 'rgba(37, 99, 235, 1)', 'rgba(124, 58, 237, 1)'],
+                        borderWidth: { top: (ctx) => ctx.dataIndex === 0 ? 4 : 1, bottom: 1, left: 1, right: 1 }
+                    }]
+                },
+                options: {
+                    scales: { y: { beginAtZero: true, max: 18, title: { display: true, text: 'Rendimiento Anual (%)' } }, x: { ticks: { autoSkip: false } } }, // Aumentar max para el 17%
+                    plugins: { legend: { display: false }, title: { display: true, text: 'OBJETIVO Loanversores (11-12%+, Potencial hasta 17%+) vs. Rendimientos' }, tooltip: { callbacks: { label: formatTooltip } } },
+                    responsive: true, maintainAspectRatio: false
+                }
             });
         }
 
-        const handleLogout = () => showNotification('Has cerrado sesión.', 'info');
-        if (logoutButtonSaaS) logoutButtonSaaS.addEventListener('click', handleLogout);
-        if (userLogoutButton) userLogoutButton.addEventListener('click', handleLogout);
+        // Gráfico 3: Desglose de Ingresos (Pie)
+        const ctxIngresos = document.getElementById('ingresosChart');
+        if (ctxIngresos) {
+            new Chart(ctxIngresos.getContext('2d'), {
+                type: 'pie', data: { labels: ['Spread', 'Comisión Originación', 'Comisión Gestión'], datasets: [{ label: 'Desglose de Ingresos Brutos (%)', data: [65, 17.5, 17.5], backgroundColor: [ 'rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(249, 115, 22, 0.8)', ], borderColor: [ 'rgba(30, 64, 175, 1)', 'rgba(4, 120, 87, 1)', 'rgba(194, 65, 12, 1)', ], borderWidth: 1 }] },
+                options: { plugins: { legend: { position: 'top' }, title: { display: true, text: 'Desglose Ingresos Brutos Potenciales (Plataforma)' }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; if (label) { label += ': '; } if (context.parsed !== null) { label += context.parsed + '%'; } return label; } } } }, responsive: true, maintainAspectRatio: false }
+            });
+        }
 
-        document.querySelectorAll('.dropdown').forEach(dropdown => {
-            let timeoutId;
-            const button = dropdown.querySelector('button, img'); // Target button or image that triggers dropdown
-            const content = dropdown.querySelector('.dropdown-content');
+        // Gráfico 4: Proyección Volumen Originado (Línea)
+        const ctxProyeccionVolumen = document.getElementById('proyeccionVolumenChart');
+        if (ctxProyeccionVolumen) {
+            new Chart(ctxProyeccionVolumen.getContext('2d'), {
+                type: 'line', data: { labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [{ label: 'Volumen Originado (RD$ M)', data: [5, 15, 30, 50], borderColor: 'rgba(59, 130, 246, 1)', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.2, fill: true, pointRadius: 4, pointBackgroundColor: 'rgba(59, 130, 246, 1)' }] },
+                options: { scales: { y: { beginAtZero: true, title: { display: true, text: 'Monto (Millones RD$)' } }, x: { title: { display: true, text: 'Trimestre del Año 1' } } }, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Proyección Volumen Originado Año 1' } }, responsive: true, maintainAspectRatio: false }
+            });
+        }
 
-            if (!button || !content) return;
+         // Gráfico 5: Proyección Detalles Financieros (Barras) - Conservador
+        const ctxProyeccionDetalle = document.getElementById('proyeccionDetalleChart');
+        if (ctxProyeccionDetalle) {
+            new Chart(ctxProyeccionDetalle.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [
+                        { label: 'Ingresos Brutos (RD$ M)', data: [0.25, 0.75, 1.5, 2.5], backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: 'rgba(4, 120, 87, 1)', borderWidth: 1 },
+                        { label: 'Costos Operativos (RD$ M)', data: [1.1, 1.3, 1.6, 1.9], backgroundColor: 'rgba(249, 115, 22, 0.7)', borderColor: 'rgba(194, 65, 12, 1)', borderWidth: 1 },
+                        { label: 'Rentabilidad Neta (RD$ M)', data: [-0.85, -0.55, -0.1, 0.6], backgroundColor: 'rgba(239, 68, 68, 0.7)', borderColor: 'rgba(185, 28, 28, 1)', borderWidth: 1 }
+                    ]
+                },
+                options: { scales: { y: { beginAtZero: false, title: { display: true, text: 'Monto (Millones RD$)' } }, x: { title: { display: true, text: 'Trimestre del Año 1' } } }, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Proyección Detalles Financieros (Plataforma) Año 1' } }, responsive: true, maintainAspectRatio: false }
+            });
+        }
 
-            const openDropdown = () => {
-                clearTimeout(timeoutId);
-                content.style.display = 'block';
-            };
-            const closeDropdown = () => {
-                 timeoutId = setTimeout(() => {
-                    content.style.display = 'none';
-                }, 200);
-            };
-            
-            button.addEventListener('mouseenter', openDropdown);
-            button.addEventListener('focus', openDropdown); // For keyboard navigation
-            dropdown.addEventListener('mouseleave', closeDropdown);
-            content.addEventListener('mouseenter', () => clearTimeout(timeoutId)); // Keep open if mouse moves to content
-        });
+        // --- Script para animar las slides al hacer scroll ---
+        const slides = document.querySelectorAll('.slide');
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const slideObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) { entry.target.classList.add('visible'); }
+            });
+        }, observerOptions);
+        slides.forEach(slide => { slideObserver.observe(slide); });
 
     </script>
+
 </body>
 </html>
